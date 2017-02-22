@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private string hoi = "hoi";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
