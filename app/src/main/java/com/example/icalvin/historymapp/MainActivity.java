@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity  {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new FirstFragment(), "Me");
         adapter.addFragment(new SecondFragment(), "Home");
-        adapter.addFragment(new ThirdFragment(), "Map");
+        adapter.addFragment(new ThirdFragment(getApplicationContext()), "Map");
         viewPager.setAdapter(adapter);
     }
 
