@@ -1,14 +1,19 @@
-package com.example.icalvin.historymapp;
+package com.example.icalvin.historymapp.tabs;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.icalvin.historymapp.DatabaseInterface;
+import com.example.icalvin.historymapp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -16,6 +21,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -23,8 +29,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
-public class MapsActivity extends AppCompatActivity implements
+
+public class ThirdFragment extends Fragment implements
         OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+
+    MapView mMapView;
+    View mView;
 
     LocationRequest mLocationRequest;
     GoogleApiClient mGoogleApiClient;
@@ -32,30 +42,47 @@ public class MapsActivity extends AppCompatActivity implements
     LatLng latLng;
     GoogleMap mGoogleMap;
     SupportMapFragment mFragment;
+    FragmentManager fragmentManager;
+    Context context;
 
     DatabaseInterface dbInterface;
 
     boolean firstPositionCheck = true;
 
+    public ThirdFragment(Context c) {
+        context = c;
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        dbInterface = new DatabaseInterface(context);
+    }
 
-        //toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
-        //getSupportActionBar().setTitle("HistoryMapp");
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mView = inflater.inflate(R.layout.map_fragment, container, false);
+        return mView;
+    }
 
-        mFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mFragment.getMapAsync(this);
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        dbInterface = new DatabaseInterface(getApplicationContext());
+        mMapView = (MapView) mView.findViewById(R.id.map);
+        if(mMapView != null)
+        {
+            mMapView.onCreate(null);
+            mMapView.onResume();
+            mMapView.getMapAsync(this);
+        }
+
     }
 
     @Override
     public void onMapReady(GoogleMap gMap) {
         mGoogleMap = gMap;
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -75,7 +102,7 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
+        mGoogleApiClient = new GoogleApiClient.Builder(context)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
@@ -84,7 +111,7 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -106,12 +133,12 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     public void onConnectionSuspended(int i) {
-        Toast.makeText(this, "Connection Suspended", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "Connection Suspended", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Toast.makeText(this, "Connection Failed", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "Connection Failed", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -139,16 +166,12 @@ public class MapsActivity extends AppCompatActivity implements
                             .position(coordinate));
                 }
             } else {
-                Toast.makeText(this, "Couldn't find places...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Couldn't find places...", Toast.LENGTH_SHORT).show();
             }
         } catch(Exception e) {
             e.printStackTrace();
-            Toast.makeText(this, "Adding markers failed!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Adding markers failed!", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 }
-
-
 
