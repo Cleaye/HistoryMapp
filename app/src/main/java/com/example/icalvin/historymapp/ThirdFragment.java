@@ -6,7 +6,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -39,8 +37,6 @@ public class ThirdFragment extends Fragment implements
 
     LatLng latLng;
     GoogleMap mGoogleMap;
-    SupportMapFragment mFragment;
-    FragmentManager fragmentManager;
     Context context;
 
     DatabaseInterface dbInterface;
@@ -90,13 +86,14 @@ public class ThirdFragment extends Fragment implements
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        mGoogleMap.setMyLocationEnabled(true);
+
+        gMap.setMyLocationEnabled(true);
 
         buildGoogleApiClient();
 
         mGoogleApiClient.connect();
 
-        createMarkers();
+        createMarkers(gMap);
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -154,13 +151,13 @@ public class ThirdFragment extends Fragment implements
         firstPositionCheck = false;
     }
 
-    private void createMarkers() {
+    private void createMarkers(GoogleMap gMap) {
         List<LatLng> coordinates = null;
         try {
             coordinates = dbInterface.getPlaces();
             if (coordinates != null && !coordinates.isEmpty()) {
                 for (LatLng coordinate : coordinates) {
-                    mGoogleMap.addMarker(new MarkerOptions()
+                    gMap.addMarker(new MarkerOptions()
                             .position(coordinate));
                 }
             } else {

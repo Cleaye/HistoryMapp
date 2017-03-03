@@ -23,25 +23,35 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 public class DatabaseInterface {
     private Context Context;
+    List<String> placesList;
+    List<LatLng> coordinateList;
 
-    public DatabaseInterface(Context context)
-    {
+    public DatabaseInterface(Context context) {
         Context = context;
+        placesList = new ArrayList<>();
+        coordinateList = new ArrayList<>();
     }
 
     public List<LatLng> getPlaces() throws ExecutionException, InterruptedException {
-        String url = "http://62.221.199.184:5842/action=get&command=search&query=and(not(isnull(Vindplaats));not(isnull(Image)))&range=1-100&fields=*";
-
-        Document doc = new RequestTask().execute(url).get();
-        List<String> placesList = xmlToList(doc);
-        List<LatLng> coordinateList = getCoordinatesFromPlaces(placesList);
-
+        createURL(1, 100);
+        getCoordinatesFromPlaces();
         return coordinateList;
     }
 
-    public List<LatLng> getCoordinatesFromPlaces(List<String> placesList) {
+    private void createURL(int start, int end) throws ExecutionException, InterruptedException {
+        String url = "http://62.221.199.184:5842/action=get&command=search&query=and(not(isnull(Locatie));not(isnull(Image)))&range="+start+"-"+end+"&fields=*";
+        Document doc = new RequestTask().execute(url).get();
+        xmlToList(doc);
+
+        NodeList countList = doc.getElementsByTagName("count");
+        int count = Integer.parseInt(countList.item(0).getFirstChild().getNodeValue());
+        if (count > end) {
+            createURL(start + 100, end + 100);
+        }
+    }
+
+    private void getCoordinatesFromPlaces() {
         Geocoder geocoder = new Geocoder(Context, Locale.US);
-        List<LatLng> coordinateList = new ArrayList<>();
         List<Address> listOfAddress;
 
         try {
@@ -60,21 +70,20 @@ public class DatabaseInterface {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return coordinateList;
     }
 
-    private List<String> xmlToList(Document doc) {
-        NodeList nodeList = doc.getElementsByTagName("Vindplaats");
-        List<String> placesList = new ArrayList<>();
+    private void xmlToList(Document doc) {
+        NodeList nodeList = doc.getElementsByTagName("Locatie");
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                placesList.add(node.getFirstChild().getNodeValue());
+                String[] fullPlace = node.getFirstChild().getNodeValue().split("\\\\");
+                String place = fullPlace[fullPlace.length - 1] + ", " + fullPlace[fullPlace.length - 2];
+                if(!placesList.contains(place)) {
+                    placesList.add(place);
+                }
             }
         }
-
-        return placesList;
     }
 
     class RequestTask extends AsyncTask<String, Void, Document> {
