@@ -21,13 +21,14 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.List;
+import java.util.Map;
 
 
 public class ThirdFragment extends Fragment implements
-        OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     MapView mMapView;
     View mView;
@@ -152,14 +153,18 @@ public class ThirdFragment extends Fragment implements
     }
 
     private void createMarkers(GoogleMap gMap) {
-        List<LatLng> coordinates = null;
+        Map<String, LatLng> mData = null;
         try {
-            coordinates = dbInterface.getPlaces();
-            if (coordinates != null && !coordinates.isEmpty()) {
-                for (LatLng coordinate : coordinates) {
-                    gMap.addMarker(new MarkerOptions()
-                            .position(coordinate));
+            mData = dbInterface.getMData();
+            if (mData != null && !mData.isEmpty()) {
+                for (Map.Entry<String, LatLng> entry : mData.entrySet()) {
+                    if(entry.getValue() != null) {
+                        gMap.addMarker(new MarkerOptions()
+                                .position(entry.getValue())
+                                .title(entry.getKey()));
+                    }
                 }
+                gMap.setOnMarkerClickListener(this);
             } else {
                 Toast.makeText(context, "Couldn't find places...", Toast.LENGTH_SHORT).show();
             }
@@ -167,6 +172,12 @@ public class ThirdFragment extends Fragment implements
             e.printStackTrace();
             Toast.makeText(context, "Adding markers failed!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+
+        return false;
     }
 }
 
