@@ -2,6 +2,9 @@
     <string name="app_name">HistoryMapp</string>
     <string name="title_activity_maps">Map</string>
     <string name="action_settings">Settings</string>
+    <string name="first_tab_title">Me</string>
+    <string name="second_tab_title">Home</string>
+    <string name="third_tab_title">Maps</string>
     <string-array name="tabs">
         <item>Info</item>
         <item>Search</item>
