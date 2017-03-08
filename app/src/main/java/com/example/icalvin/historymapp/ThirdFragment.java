@@ -16,14 +16,18 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -32,6 +36,7 @@ public class ThirdFragment extends Fragment implements
 
     MapView mMapView;
     View mView;
+
 
     LocationRequest mLocationRequest;
     GoogleApiClient mGoogleApiClient;
@@ -154,6 +159,7 @@ public class ThirdFragment extends Fragment implements
 
     private void createMarkers(GoogleMap gMap) {
         Map<String, LatLng> mData = null;
+        List<LatLng> markers = new ArrayList<LatLng>();
         try {
             mData = dbInterface.getMData();
             if (mData != null && !mData.isEmpty()) {
@@ -162,6 +168,7 @@ public class ThirdFragment extends Fragment implements
                         gMap.addMarker(new MarkerOptions()
                                 .position(entry.getValue())
                                 .title(entry.getKey()));
+                        markers.add(entry.getValue());
                     }
                 }
                 gMap.setOnMarkerClickListener(this);
@@ -172,12 +179,27 @@ public class ThirdFragment extends Fragment implements
             e.printStackTrace();
             Toast.makeText(context, "Adding markers failed!", Toast.LENGTH_SHORT).show();
         }
+        zoomOnMarkers(gMap, markers, 50);
     }
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
         return false;
+    }
+
+
+    public void zoomOnMarkers(GoogleMap gMap, List<LatLng> markers, int border){
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (LatLng marker : markers) {
+            builder.include(marker);
+        }
+        LatLngBounds bounds = builder.build();
+
+        int padding = border; // offset from edges of the map in pixels
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+
+        gMap.animateCamera(cu);
     }
 }
 
