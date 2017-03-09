@@ -73,7 +73,7 @@
                 android:id="@+id/button4"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:src="@mipmap/ic_ship"
+                android:src="@mipmap/ic_knight"
                 android:scaleType="fitCenter" />
 
             <ImageButton
@@ -83,7 +83,7 @@
                 android:id="@+id/button5"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:src="@mipmap/ic_knight"
+                android:src="@mipmap/ic_ship"
                 android:scaleType="fitCenter"/>
 
             <ImageButton

@@ -1,6 +1,7 @@
 package com.example.icalvin.historymapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -176,8 +177,10 @@ public class ThirdFragment extends Fragment implements
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
-
-        return false;
+        Intent intent = new Intent(context, ItemListActivity.class);
+        intent.putExtra("Title", marker.getTitle());
+        startActivityForResult(intent, 1);
+        return true;
     }
 }
 
