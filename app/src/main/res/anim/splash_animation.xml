@@ -4,20 +4,18 @@
     <alpha
         android:fromAlpha="0.0"
         android:toAlpha="1.0"
-        android:duration="1000"
+        android:duration="1500"
         ></alpha>
     <set
-
-    android:startOffset="250">
+    android:startOffset="500">
         <rotate
             android:duration="2000"
-            android:fromDegrees="0"
-            android:toDegrees="360"
+            android:fromDegrees="360"
+            android:toDegrees="0"
             android:pivotX="50%"
             android:pivotY="50%"
             ></rotate>
         <set
-
             android:startOffset="1250">
             <alpha
                 android:fromAlpha="1.0"
