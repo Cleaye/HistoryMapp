@@ -6,6 +6,7 @@ import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import com.example.icalvin.historymapp.dummy.FindingContent;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.w3c.dom.Document;
@@ -37,17 +38,17 @@ public class DatabaseInterface {
         return mDataMap;
     }
 
-    public List<Finding> getFindingsFromPlace(String place) throws ExecutionException, InterruptedException {
+    public List<FindingContent.FindingItem> getFindingsFromPlace(String place) throws ExecutionException, InterruptedException {
         String url = "http://62.221.199.184:5842/action=get&command=search&query=and(Vindplaats="+place+";not(isnull(Image)))&range=1-100&fields=*";
-        Document doc = new RequestTask().execute(url).get();
-        List<Finding> findings = findingsToList(doc);
+        Document doc = new RequestXMLTask().execute(url).get();
+        List<FindingContent.FindingItem> findings = findingsToList(doc);
 
         return findings;
     }
 
     private void createMarkerURL(int start, int end) throws ExecutionException, InterruptedException {
         String url = "http://62.221.199.184:5842/action=get&command=search&query=and(not(isnull(Locatie));not(isnull(Image)))&range="+start+"-"+end+"&fields=*";
-        Document doc = new RequestTask().execute(url).get();
+        Document doc = new RequestXMLTask().execute(url).get();
         locationsToList(doc);
 
         NodeList countList = doc.getElementsByTagName("count");
@@ -92,21 +93,53 @@ public class DatabaseInterface {
         }
     }
 
-    private List<Finding> findingsToList(Document doc) {
+    private List<FindingContent.FindingItem> findingsToList(Document doc) {
         NodeList findingNodes = doc.getElementsByTagName("PZHoai");
-        List<Finding> findings = new ArrayList<>();
+        List<FindingContent.FindingItem> findings = new ArrayList<>();
 
         for (int i = 0; i < findingNodes.getLength(); i++) {
             Node finding = findingNodes.item(i);
             if (finding.getNodeType() == Node.ELEMENT_NODE) {
+                NodeList attributes = finding.getChildNodes();
+                String id = null;
+                String name = null;
+                String description = null ;
+                String period = null;
+                String imageURL = null;
 
+                for(int j = 0; j < attributes.getLength(); j++) {
+                    String attributeName = null;
+                    try {
+                        attributeName = attributes.item(j).getNodeName();
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (attributeName != null) {
+                        switch (attributeName) {
+                            case "ID":
+                                id = attributes.item(j).getFirstChild().getNodeValue();
+                                break;
+                            case "Description":
+                                name = attributes.item(j).getFirstChild().getNodeValue();
+                                break;
+                            case "Periode":
+                                period = attributes.item(j).getFirstChild().getNodeValue();
+                                break;
+                            case "Image":
+                                imageURL = attributes.item(j).getFirstChild().getNodeValue();
+                                break;
+                        }
+                    }
+                }
+
+                findings.add(FindingContent.createFindingItem(id, name, description, period, imageURL));
             }
         }
 
         return findings;
     }
 
-    class RequestTask extends AsyncTask<String, Void, Document> {
+    class RequestXMLTask extends AsyncTask<String, Void, Document> {
         @Override
         protected Document doInBackground(String... url) {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -123,5 +156,4 @@ public class DatabaseInterface {
             return doc;
         }
     }
-    //change
 }
