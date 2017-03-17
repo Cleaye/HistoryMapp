@@ -1,10 +1,12 @@
 package com.example.icalvin.historymapp;
 
 import android.content.Context;
-import android.widget.ImageView;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 
-import com.bumptech.glide.Glide;
-
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,13 +60,31 @@ public class FindingContent {
             this.imageURL = imageURL;
         }
 
-        public void getImage(Context context, ImageView view) {
-            Glide.with(context).load(imageURL).into(view);
+        public Bitmap getImage() throws ExecutionException, InterruptedException {
+            Bitmap bitmap = new RequestImageTask().execute(imageURL).get();
+
+            return bitmap;
         }
 
         @Override
         public String toString() {
             return name;
+        }
+
+        class RequestImageTask extends AsyncTask<String, Void, Bitmap> {
+            @Override
+            protected Bitmap doInBackground(String... url) {
+                Bitmap bitmap = null;
+
+                try {
+                    InputStream is = (InputStream) new URL(url[0]).getContent();
+                    bitmap = BitmapFactory.decodeStream(is);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                return bitmap;
+            }
         }
     }
 }
