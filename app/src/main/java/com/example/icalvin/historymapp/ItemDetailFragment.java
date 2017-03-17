@@ -40,20 +40,14 @@ public class ItemDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
             mItem = FindingContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
 
             ImageView imageView = (ImageView) activity.findViewById(R.id.toolbar_image);
-            try {
-                imageView.setImageBitmap(mItem.getImage());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+            mItem.getImage(getContext(), imageView);
 
             if (appBarLayout != null) {
                 appBarLayout.setTitle(mItem.name);
