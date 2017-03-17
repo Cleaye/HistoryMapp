@@ -57,6 +57,7 @@ public class ItemDetailFragment extends Fragment {
 
             if (appBarLayout != null) {
                 appBarLayout.setTitle(mItem.name);
+
             }
         }
     }
@@ -67,7 +68,7 @@ public class ItemDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.item_detail, container, false);
 
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.period);
+            ((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.period +"\n\n"+ mItem.name);
         }
 
         return rootView;

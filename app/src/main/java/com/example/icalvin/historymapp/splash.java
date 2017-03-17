@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -14,7 +15,7 @@ import java.lang.reflect.AccessibleObject;
  * Created by Nick on 8-3-2017.
  */
 
-public class splash extends Activity {
+public class splash extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
