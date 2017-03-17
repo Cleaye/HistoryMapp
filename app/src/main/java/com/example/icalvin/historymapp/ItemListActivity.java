@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -101,8 +102,8 @@ public class ItemListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
+            mValues.get(position).getImage(getApplicationContext(), holder.mImageView);
             holder.mIdView.setText(mValues.get(position).name);
-            //holder.mContentView.setText(mValues.get(position).content);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -133,12 +134,14 @@ public class ItemListActivity extends AppCompatActivity {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
+            public final ImageView mImageView;
             public final TextView mIdView;
             public FindingContent.FindingItem mItem;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
+                mImageView = (ImageView) view.findViewById(R.id.List_icon);
                 mIdView = (TextView) view.findViewById(R.id.id);
             }
 
