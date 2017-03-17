@@ -1,11 +1,9 @@
-package com.example.icalvin.historymapp.dummy;
+package com.example.icalvin.historymapp;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-
-import com.example.icalvin.historymapp.DatabaseInterface;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -31,8 +29,16 @@ public class FindingContent {
         return new FindingItem(id, name, description, period, imageURL);
     }
 
-    public List<FindingItem> getFindings(String place) throws ExecutionException, InterruptedException {
-        ITEMS = dbInterface.getFindingsFromPlace(place);
+    public List<FindingItem> getFindingsFromPlace(String place) throws ExecutionException, InterruptedException {
+        ITEMS = dbInterface.getFindingsFromPlace(place, 1, 100, new ArrayList<FindingItem>());
+        for(FindingItem item : ITEMS) {
+            ITEM_MAP.put(item.id, item);
+        }
+        return ITEMS;
+    }
+
+    public List<FindingItem> getFindingsByPeriod(String period) throws ExecutionException, InterruptedException {
+        ITEMS = dbInterface.getFindingsByPeriod(period, 1, 100, new ArrayList<FindingItem>());
         for(FindingItem item : ITEMS) {
             ITEM_MAP.put(item.id, item);
         }

@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="100dp"
+    android:gravity="bottom"
     tools:context=".SecondFragment">
 
     <!--<TextView
@@ -15,11 +17,19 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_height="470dp"
+        android:gravity="bottom|center_horizontal"
         android:orientation="vertical"
-        android:weightSum="4"
-        android:gravity="center">
+        android:paddingBottom="20dp"
+        android:weightSum="4">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Zoek op een bepaalde periode:"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,34 +39,37 @@
             android:weightSum="3">
 
             <ImageButton
-                android:text="Button"
+                android:id="@+id/bPaleolithicum"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:id="@+id/button1"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
+                android:onClick="onClickPaleolithicum"
+                android:scaleType="fitCenter"
                 android:src="@mipmap/ic_vase"
-                android:scaleType="fitCenter"/>
+                android:text="Button" />
 
             <ImageButton
-                android:text="Button"
+                android:id="@+id/bMesolithicum"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:id="@+id/button2"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:src="@mipmap/ic_museum"
-                android:scaleType="fitCenter"/>
+                android:onClick="onClickMesolithicum"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_vase"
+                android:text="Button" />
 
             <ImageButton
-                android:text="Button"
+                android:id="@+id/bNeolithicum"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:id="@+id/button3"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:src="@mipmap/ic_colloseum"
-                android:scaleType="fitCenter"/>
+                android:onClick="onClickNeolithicum"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_vase"
+                android:text="Button" />
         </LinearLayout>
 
         <LinearLayout
@@ -67,38 +80,93 @@
             android:weightSum="3">
 
             <ImageButton
-                android:text="Button"
+                android:id="@+id/bBronstijd"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:id="@+id/button4"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
+                android:onClick="onClickBronstijd"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_vase"
+                android:text="Button" />
+
+            <ImageButton
+                android:id="@+id/bIJzertijd"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:elevation="0dp"
+                android:onClick="onClickIJzertijd"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_vase"
+                android:text="Button" />
+
+            <ImageButton
+                android:id="@+id/bRomeinse_tijd"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:onClick="onClickRomeinse_tijd"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_colloseum"
+                android:text="Button" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <ImageButton
+                android:id="@+id/bMiddeleeuwen_vroeg"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:onClick="onClickMiddeleeuwen_vroeg"
+                android:scaleType="fitCenter"
                 android:src="@mipmap/ic_knight"
-                android:scaleType="fitCenter" />
+                android:text="Button" />
 
             <ImageButton
-                android:text="Button"
+                android:id="@+id/bMiddeleeuwen_laat"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:id="@+id/button5"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
+                android:onClick="onClickMiddeleeuwen_laat"
+                android:scaleType="fitCenter"
                 android:src="@mipmap/ic_ship"
-                android:scaleType="fitCenter"/>
+                android:text="Button" />
 
             <ImageButton
-                android:text="Button"
+                android:id="@+id/bNieuwe_tijd"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:id="@+id/button6"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
+                android:onClick="onClickNieuwe_tijd"
+                android:scaleType="fitCenter"
                 android:src="@mipmap/ic_factory"
-                android:scaleType="fitCenter" />
+                android:text="Button" />
 
         </LinearLayout>
 
-        </LinearLayout>
+        <Button
+            android:id="@+id/bAdvanced"
+            android:layout_width="123dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:backgroundTint="@color/colorAccent"
+            android:text="Geavanceerd zoeken"
+            android:textSize="10sp" />
+
+    </LinearLayout>
 
 
 </LinearLayout>

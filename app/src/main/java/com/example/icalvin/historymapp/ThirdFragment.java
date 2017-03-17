@@ -186,6 +186,7 @@ public class ThirdFragment extends Fragment implements
     @Override
     public boolean onMarkerClick(final Marker marker) {
         Intent intent = new Intent(context, ItemListActivity.class);
+        intent.putExtra("Type", "Place");
         intent.putExtra("Title", marker.getTitle());
         startActivityForResult(intent, 1);
         return true;

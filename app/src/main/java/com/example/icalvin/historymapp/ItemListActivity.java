@@ -15,8 +15,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.icalvin.historymapp.dummy.FindingContent;
-
 import java.util.List;
 
 public class ItemListActivity extends AppCompatActivity {
@@ -26,12 +24,13 @@ public class ItemListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        String placeName = getIntent().getStringExtra("Title");
+        String viewType = getIntent().getStringExtra("Type");
+        String title = getIntent().getStringExtra("Title");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(placeName);
+        toolbar.setTitle(title);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -39,12 +38,21 @@ public class ItemListActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        findingContent = new FindingContent(getApplicationContext());
-        try {
-            findingContent.getFindings(placeName.split(",")[0]);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(getApplicationContext(), "Couldn't get findings!", Toast.LENGTH_SHORT).show();
+        if (title != null) {
+            findingContent = new FindingContent(getApplicationContext());
+            try {
+                switch (viewType) {
+                    case "Place":
+                        findingContent.getFindingsFromPlace(title.split(",")[0]);
+                        break;
+                    case "Period":
+                        findingContent.getFindingsByPeriod(title);
+                        break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Couldn't get findings!", Toast.LENGTH_SHORT).show();
+            }
         }
 
         View recyclerView = findViewById(R.id.item_list);

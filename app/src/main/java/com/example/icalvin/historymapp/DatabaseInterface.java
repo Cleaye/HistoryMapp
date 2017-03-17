@@ -6,13 +6,15 @@ import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import com.example.icalvin.historymapp.dummy.FindingContent;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,17 +40,67 @@ public class DatabaseInterface {
         return mDataMap;
     }
 
-    public List<FindingContent.FindingItem> getFindingsFromPlace(String place) throws ExecutionException, InterruptedException {
-        String url = "http://62.221.199.184:5842/action=get&command=search&query=and(Vindplaats="+place+";not(isnull(Image)))&range=1-100&fields=*";
-        Document doc = new RequestXMLTask().execute(url).get();
-        List<FindingContent.FindingItem> findings = findingsToList(doc);
+    public List<FindingContent.FindingItem> getFindingsFromPlace(String place, int start, int end, List<FindingContent.FindingItem> findings) throws ExecutionException, InterruptedException {
+        String urlString = "http://62.221.199.184:5842/action=get&command=search&query=and(Vindplaats="+place+";not(isnull(Image)))&range="+start+"-"+end+"&fields=*";
+        Document doc = null;
+        try {
+            doc = getDoc(urlString);
+            List<FindingContent.FindingItem> newFindings = findingsToList(doc);
 
+            if(newFindings.size() > 0) {
+                for (FindingContent.FindingItem item : newFindings) {
+                    findings.add(item);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(doc != null) {
+            NodeList countList = doc.getElementsByTagName("count");
+            int count = Integer.parseInt(countList.item(0).getFirstChild().getNodeValue());
+            if (count > end) {
+                return getFindingsFromPlace(place, start + 100, end + 100, findings);
+            }
+        }
+        return findings;
+    }
+
+    public List<FindingContent.FindingItem> getFindingsByPeriod(String period, int start, int end, List<FindingContent.FindingItem> findings) throws ExecutionException, InterruptedException {
+        String urlString = "http://62.221.199.184:5842/action=get&command=search&query=and(Periode_sort="+period+";not(isnull(Image)))&range="+start+"-"+end+"&fields=*";
+        Document doc = null;
+        try {
+            doc = getDoc(urlString);
+            List<FindingContent.FindingItem> newFindings = findingsToList(doc);
+
+            if(newFindings.size() > 0) {
+                for (FindingContent.FindingItem item : newFindings) {
+                    findings.add(item);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(doc != null) {
+            NodeList countList = doc.getElementsByTagName("count");
+            int count = Integer.parseInt(countList.item(0).getFirstChild().getNodeValue());
+            if (count > end) {
+                return getFindingsByPeriod(period, start + 100, end + 100, findings);
+            }
+        }
         return findings;
     }
 
     private void createMarkerURL(int start, int end) throws ExecutionException, InterruptedException {
         String url = "http://62.221.199.184:5842/action=get&command=search&query=and(not(isnull(Locatie));not(isnull(Image)))&range="+start+"-"+end+"&fields=*";
-        Document doc = new RequestXMLTask().execute(url).get();
+        Document doc = null;
+        try {
+            doc = getDoc(url);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
         locationsToList(doc);
 
         NodeList countList = doc.getElementsByTagName("count");
@@ -56,6 +108,15 @@ public class DatabaseInterface {
         if (count > end) {
             createMarkerURL(start + 100, end + 100);
         }
+    }
+
+    private Document getDoc(String urlString) throws ExecutionException, InterruptedException, MalformedURLException, URISyntaxException {
+        URL url = new URL(urlString);
+        URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+        url = uri.toURL();
+        Document doc = new RequestXMLTask().execute(url.toString()).get();
+
+        return doc;
     }
 
     private LatLng getCoordinatesFromPlaces(String place) {

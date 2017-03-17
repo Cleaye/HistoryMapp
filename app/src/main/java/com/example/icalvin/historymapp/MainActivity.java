@@ -20,8 +20,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity  {
 
-    DatabaseInterface dbInterface;
-
     private ViewPager mPager;
     private TabLayout tabLayout;
     private MaterialSearchView searchView;
