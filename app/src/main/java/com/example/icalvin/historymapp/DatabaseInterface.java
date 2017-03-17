@@ -93,7 +93,7 @@ public class DatabaseInterface {
     }
 
     private void createMarkerURL(int start, int end) throws ExecutionException, InterruptedException {
-        String url = "http://62.221.199.184:5842/action=get&command=search&query=and(not(isnull(Locatie));not(isnull(Image)))&range="+start+"-"+end+"&fields=*";
+        String url = "http://62.221.199.184:5842/action=get&command=search&query=and(not(isnull(Locatie));not(isnull(Image)))&range="+start+"-"+end+"&fields=Locatie";
         Document doc = null;
         try {
             doc = getDoc(url);
