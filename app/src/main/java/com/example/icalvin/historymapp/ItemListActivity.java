@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -100,6 +101,10 @@ public class ItemListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
+            ImageView imageView = (ImageView) findViewById(R.id.List_icon);
+            if (imageView != null){
+                mValues.get(position).getImage(getApplicationContext(), imageView);
+            }
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(mValues.get(position).name);
             //holder.mContentView.setText(mValues.get(position).content);
