@@ -106,8 +106,8 @@ public class ItemListActivity extends AppCompatActivity {
                 mValues.get(position).getImage(getApplicationContext(), imageView);
             }
             holder.mItem = mValues.get(position);
+            mValues.get(position).getImage(getApplicationContext(), holder.mImageView);
             holder.mIdView.setText(mValues.get(position).name);
-            //holder.mContentView.setText(mValues.get(position).content);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -138,12 +138,14 @@ public class ItemListActivity extends AppCompatActivity {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
+            public final ImageView mImageView;
             public final TextView mIdView;
             public FindingContent.FindingItem mItem;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
+                mImageView = (ImageView) view.findViewById(R.id.List_icon);
                 mIdView = (TextView) view.findViewById(R.id.id);
             }
 
