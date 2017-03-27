@@ -101,6 +101,10 @@ public class ItemListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
+            ImageView imageView = (ImageView) findViewById(R.id.List_icon);
+            if (imageView != null){
+                mValues.get(position).getImage(getApplicationContext(), imageView);
+            }
             holder.mItem = mValues.get(position);
             mValues.get(position).getImage(getApplicationContext(), holder.mImageView);
             holder.mIdView.setText(mValues.get(position).name);
