@@ -10,8 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.concurrent.ExecutionException;
-
 /**
  * A fragment representing a single Item detail screen.
  * This fragment is either contained in a {@link ItemListActivity}
@@ -48,18 +46,10 @@ public class ItemDetailFragment extends Fragment {
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
 
             ImageView imageView = (ImageView) activity.findViewById(R.id.toolbar_image);
-
-            try {
-                imageView.setImageBitmap(mItem.getImage());
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            mItem.getImage(getContext(), imageView);
 
             if (appBarLayout != null) {
                 appBarLayout.setTitle(mItem.name);
-
             }
         }
     }
