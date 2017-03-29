@@ -49,17 +49,10 @@ public class ItemDetailFragment extends Fragment {
 
             ImageView imageView = (ImageView) activity.findViewById(R.id.toolbar_image);
 
-            try {
-                imageView.setImageBitmap(mItem.getImage());
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            mItem.getImage(getContext(), imageView);
 
             if (appBarLayout != null) {
                 appBarLayout.setTitle(mItem.name);
-
             }
         }
     }

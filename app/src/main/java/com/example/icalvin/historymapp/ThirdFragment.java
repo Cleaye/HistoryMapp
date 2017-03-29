@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import android.widget.ImageButton;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -50,6 +51,9 @@ public class ThirdFragment extends Fragment implements
 
     boolean firstPositionCheck = true;
 
+    ImageButton fab;
+    List<LatLng> markers = new ArrayList<LatLng>();
+
     public ThirdFragment(Context c) {
         context = c;
     }
@@ -77,6 +81,14 @@ public class ThirdFragment extends Fragment implements
             mMapView.onResume();
             mMapView.getMapAsync(this);
         }
+
+        fab = (ImageButton) mView.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                zoomOnMarkers(mGoogleMap,markers, 50);
+            }
+        });
 
     }
 
@@ -160,7 +172,6 @@ public class ThirdFragment extends Fragment implements
 
     private void createMarkers(GoogleMap gMap) {
         Map<String, LatLng> mData = null;
-        List<LatLng> markers = new ArrayList<LatLng>();
         try {
             mData = dbInterface.getMData();
             if (mData != null && !mData.isEmpty()) {
