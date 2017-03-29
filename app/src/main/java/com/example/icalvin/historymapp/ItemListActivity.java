@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -22,11 +21,12 @@ public class ItemListActivity extends AppCompatActivity {
 
     private boolean mTwoPane;
     private FindingContent findingContent;
+    private String title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         String viewType = getIntent().getStringExtra("Type");
-        String title = getIntent().getStringExtra("Title");
+        title = getIntent().getStringExtra("Title");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
 
@@ -52,7 +52,6 @@ public class ItemListActivity extends AppCompatActivity {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(getApplicationContext(), "Couldn't get findings!", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -120,6 +119,7 @@ public class ItemListActivity extends AppCompatActivity {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ItemDetailActivity.class);
                         intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        intent.putExtra("Title", title);
 
                         context.startActivity(intent);
                     }

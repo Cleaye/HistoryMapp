@@ -9,10 +9,15 @@ import android.view.MenuItem;
 
 public class ItemDetailActivity extends AppCompatActivity {
 
+    private String title;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
+
+        title = getIntent().getStringExtra("Title");
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
@@ -40,7 +45,9 @@ public class ItemDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            navigateUpTo(new Intent(this, ItemListActivity.class));
+            Intent intent = new Intent(this, ItemListActivity.class);
+            intent.putExtra("Title", title);
+            navigateUpTo(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
