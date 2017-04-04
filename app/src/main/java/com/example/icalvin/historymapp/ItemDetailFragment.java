@@ -1,9 +1,11 @@
 package com.example.icalvin.historymapp;
 
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -11,6 +13,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
+
+import java.lang.reflect.Type;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
@@ -20,13 +33,19 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
  * in two-pane mode (on tablets) or a {@link ItemDetailActivity}
  * on handsets.
  */
-public class ItemDetailFragment extends Fragment {
+public class ItemDetailFragment extends Fragment implements OnMapReadyCallback {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
     public static final String ARG_ITEM_ID = "item_id";
+    public static final String ARG_ITEM = "item";
+
     private FindingContent.FindingItem mItem;
+    private FavouriteEditor favouriteEditor;
+
+    private GoogleMap mMap;
+    private MapView mMapView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -38,9 +57,16 @@ public class ItemDetailFragment extends Fragment {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        favouriteEditor = new FavouriteEditor(getContext());
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            mItem = FindingContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+        if (getArguments().containsKey(ARG_ITEM_ID) || getArguments().containsKey(ARG_ITEM)) {
+            if (getArguments().containsKey(ARG_ITEM_ID))
+                mItem = FindingContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            else {
+                Gson gson = new Gson();
+                Type type = new TypeToken<FindingContent.FindingItem>() {}.getType();
+                mItem = gson.fromJson(getArguments().getString(ARG_ITEM), type);
+            }
 
             final Activity activity = this.getActivity();
             final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
@@ -77,6 +103,23 @@ public class ItemDetailFragment extends Fragment {
                 }
             });
             mItem.getImage(getContext(), imageView);
+
+            LikeButton likeButton = (LikeButton) activity.findViewById(R.id.star_button);
+            if(favouriteEditor.isLiked("Findings", mItem))
+                likeButton.setLiked(true);
+            likeButton.setOnLikeListener(new OnLikeListener() {
+                @Override
+                public void liked(LikeButton likeButton) {
+                    favouriteEditor.addToList("Findings", mItem);
+                    MainActivity.updateFragment();
+                }
+
+                @Override
+                public void unLiked(LikeButton likeButton) {
+                    favouriteEditor.removeFromList("Findings", mItem);
+                    MainActivity.updateFragment();
+                }
+            });
         }
     }
 
@@ -86,7 +129,15 @@ public class ItemDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.item_detail, container, false);
 
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.period +"\n\n"+ mItem.name);
+            ((TextView) rootView.findViewById(R.id.item_detail_text)).setText(mItem.period +"\n\n"+ mItem.name);
+        }
+
+        mMapView = (MapView) rootView.findViewById(R.id.map);
+        if(mMapView != null)
+        {
+            mMapView.onCreate(null);
+            mMapView.onResume();
+            mMapView.getMapAsync(this);
         }
 
         return rootView;
@@ -104,5 +155,21 @@ public class ItemDetailFragment extends Fragment {
 
         imageDialog.create();
         imageDialog.show();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap gMap) {
+        mMap = gMap;
+        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        gMap.setMyLocationEnabled(true);
+
+        if (ConnectionManager.hasNetworkConnection(getContext())) {
+            // TODO: Create marker
+        }
+        else
+            Toast.makeText(getContext(), "Schakel een internetverbinding in", Toast.LENGTH_LONG).show();
     }
 }

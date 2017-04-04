@@ -30,15 +30,23 @@ public class ItemDetailActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
-            Bundle arguments = new Bundle();
-            arguments.putString(ItemDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(ItemDetailFragment.ARG_ITEM_ID));
-            ItemDetailFragment fragment = new ItemDetailFragment();
-            fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.item_detail_container, fragment)
-                    .commit();
+            String argument = getIntent().getStringExtra(ItemDetailFragment.ARG_ITEM_ID);
+            if (argument == null) {
+                argument = getIntent().getStringExtra(ItemDetailFragment.ARG_ITEM);
+                createFragment(argument, ItemDetailFragment.ARG_ITEM);
+            } else
+                createFragment(argument, ItemDetailFragment.ARG_ITEM_ID);
         }
+    }
+
+    private void createFragment(String argument, String argumentType) {
+        Bundle arguments = new Bundle();
+        arguments.putString(argumentType, argument);
+        ItemDetailFragment fragment = new ItemDetailFragment();
+        fragment.setArguments(arguments);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.item_detail_container, fragment)
+                .commit();
     }
 
     @Override

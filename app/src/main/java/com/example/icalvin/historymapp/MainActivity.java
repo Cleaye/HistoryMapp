@@ -20,7 +20,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity  {
 
-    private ViewPager mPager;
+    private static ViewPager mPager;
     private TabLayout tabLayout;
     private MaterialSearchView searchView;
     private Toolbar toolbar;
@@ -80,6 +80,10 @@ public class MainActivity extends AppCompatActivity  {
         viewPager.setAdapter(adapter);
     }
 
+    public static void updateFragment() {
+        mPager.getAdapter().notifyDataSetChanged();
+    }
+
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
@@ -106,6 +110,15 @@ public class MainActivity extends AppCompatActivity  {
         @Override
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            IFragment fragment = (IFragment ) object;
+            if (fragment != null) {
+                fragment.update();
+            }
+            return super.getItemPosition(object);
         }
     }
 

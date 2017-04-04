@@ -19,13 +19,8 @@
         app:srcCompat="@mipmap/ic_collapse"
         tools:fabSize="mini" />
 
-
     <com.google.android.gms.maps.MapView
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
-
-
-
 </FrameLayout>

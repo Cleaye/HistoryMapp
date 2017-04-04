@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 
-public class SecondFragment extends Fragment{
+public class SecondFragment extends Fragment implements IFragment{
 
     private ImageButton ib1;
     private ImageButton ib2;
@@ -35,7 +35,7 @@ public class SecondFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View inflatedView =  inflater.inflate(R.layout.second_fragment, container, false);
+        View inflatedView = inflater.inflate(R.layout.second_fragment, container, false);
 
         ImageButton ib1 = (ImageButton) inflatedView.findViewById(R.id.bPaleolithicum);
         ImageButton ib2 = (ImageButton) inflatedView.findViewById(R.id.bMesolithicum);
@@ -130,4 +130,8 @@ public class SecondFragment extends Fragment{
         startActivityForResult(intent, 1);
     }
 
+    @Override
+    public boolean update() {
+        return false;
+    }
 }

@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -42,14 +43,17 @@ public class ItemListActivity extends AppCompatActivity {
         if (title != null) {
             findingContent = new FindingContent(getApplicationContext());
             try {
-                switch (viewType) {
-                    case "Place":
-                        findingContent.getFindingsFromPlace(title.split(",")[0]);
-                        break;
-                    case "Period":
-                        findingContent.getFindingsByPeriod(title);
-                        break;
-                }
+                if (ConnectionManager.hasNetworkConnection(getApplicationContext())) {
+                    switch (viewType) {
+                        case "Place":
+                            findingContent.getFindingsFromPlace(title.split(",")[0]);
+                            break;
+                        case "Period":
+                            findingContent.getFindingsByPeriod(title);
+                            break;
+                    }
+                } else
+                    Toast.makeText(getApplicationContext(), "Schakel een internetverbinding in", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -10,8 +10,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -34,7 +34,7 @@ import java.util.Map;
 
 
 public class ThirdFragment extends Fragment implements
-        OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        IFragment, OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     MapView mMapView;
     View mView;
@@ -48,8 +48,6 @@ public class ThirdFragment extends Fragment implements
     Context context;
 
     DatabaseInterface dbInterface;
-
-    boolean firstPositionCheck = true;
 
     ImageButton fab;
     List<LatLng> markers = new ArrayList<LatLng>();
@@ -96,13 +94,6 @@ public class ThirdFragment extends Fragment implements
     public void onMapReady(GoogleMap gMap) {
         mGoogleMap = gMap;
         if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
 
@@ -112,7 +103,10 @@ public class ThirdFragment extends Fragment implements
 
         mGoogleApiClient.connect();
 
-        createMarkers(gMap);
+        if (ConnectionManager.hasNetworkConnection(context))
+            createMarkers(gMap);
+        else
+            Toast.makeText(context, "Schakel een internetverbinding in", Toast.LENGTH_LONG).show();
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -126,13 +120,6 @@ public class ThirdFragment extends Fragment implements
     @Override
     public void onConnected(Bundle bundle) {
         if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
 
@@ -140,19 +127,18 @@ public class ThirdFragment extends Fragment implements
         mLocationRequest.setInterval(5000); //5 seconds
         mLocationRequest.setFastestInterval(3000); //3 seconds
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        //mLocationRequest.setSmallestDisplacement(0.1F); //1/10 meter
 
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Toast.makeText(context, "Connection Suspended", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "Verbinding verbroken...", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Toast.makeText(context, "Connection Failed", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "Verbinding mislukt...", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -160,14 +146,9 @@ public class ThirdFragment extends Fragment implements
         latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
         //zoom to current position:
-        if (firstPositionCheck) {
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-        }
-
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
         //If you only need one location, unregister the listener
-        //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-
-        firstPositionCheck = false;
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
     private void createMarkers(GoogleMap gMap) {
@@ -184,14 +165,14 @@ public class ThirdFragment extends Fragment implements
                     }
                 }
                 gMap.setOnMarkerClickListener(this);
+                zoomOnMarkers(gMap, markers, 50);
             } else {
-                Toast.makeText(context, "Couldn't find places...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Verbinding mislukt...", Toast.LENGTH_SHORT).show();
             }
         } catch(Exception e) {
             e.printStackTrace();
-            Toast.makeText(context, "Adding markers failed!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Oeps, er ging iets fout... Check uw internet verbinding", Toast.LENGTH_SHORT).show();
         }
-        zoomOnMarkers(gMap, markers, 50);
     }
 
     @Override
@@ -203,18 +184,24 @@ public class ThirdFragment extends Fragment implements
         return true;
     }
 
-
     public void zoomOnMarkers(GoogleMap gMap, List<LatLng> markers, int border){
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        for (LatLng marker : markers) {
-            builder.include(marker);
+        if (!markers.isEmpty()) {
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (LatLng marker : markers) {
+                builder.include(marker);
+            }
+            LatLngBounds bounds = builder.build();
+
+            int padding = border; // offset from edges of the map in pixels
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+
+            gMap.animateCamera(cu);
         }
-        LatLngBounds bounds = builder.build();
+    }
 
-        int padding = border; // offset from edges of the map in pixels
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-
-        gMap.animateCamera(cu);
+    @Override
+    public boolean update() {
+        return false;
     }
 }
 
