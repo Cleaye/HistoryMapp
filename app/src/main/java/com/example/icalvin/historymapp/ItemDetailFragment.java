@@ -34,10 +34,7 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
  * on handsets.
  */
 public class ItemDetailFragment extends Fragment implements OnMapReadyCallback {
-    /**
-     * The fragment argument representing the item ID that this fragment
-     * represents.
-     */
+
     public static final String ARG_ITEM_ID = "item_id";
     public static final String ARG_ITEM = "item";
 
@@ -54,6 +51,10 @@ public class ItemDetailFragment extends Fragment implements OnMapReadyCallback {
     public ItemDetailFragment() {
     }
 
+    /**
+     * Setups the View of the Fragment.
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +81,11 @@ public class ItemDetailFragment extends Fragment implements OnMapReadyCallback {
                 boolean isShow = false;
                 int scrollRange = -1;
 
+                /**
+                 * Handles if the title must be shown or not.
+                 * @param appBarLayout
+                 * @param verticalOffset
+                 */
                 @Override
                 public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
                     if (scrollRange == -1) {
@@ -108,12 +114,20 @@ public class ItemDetailFragment extends Fragment implements OnMapReadyCallback {
             if(favouriteEditor.isLiked("Findings", mItem))
                 likeButton.setLiked(true);
             likeButton.setOnLikeListener(new OnLikeListener() {
+                /**
+                 * What happens when the favourite button is pressed (while not favoured).
+                 * @param likeButton The button that has been pressed.
+                 */
                 @Override
                 public void liked(LikeButton likeButton) {
                     favouriteEditor.addToList("Findings", mItem);
                     MainActivity.updateFragment();
                 }
 
+                /**
+                 * What happens when the favourite button is pressed (while favoured).
+                 * @param likeButton The button that has been pressed.
+                 */
                 @Override
                 public void unLiked(LikeButton likeButton) {
                     favouriteEditor.removeFromList("Findings", mItem);
@@ -123,6 +137,13 @@ public class ItemDetailFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    /**
+     * Fills in the details about an item.
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -143,6 +164,10 @@ public class ItemDetailFragment extends Fragment implements OnMapReadyCallback {
         return rootView;
     }
 
+    /**
+     * Loads the image in a pop-up, when clicked on.
+     * @param imageView The ImageView that was clicked on.
+     */
     private void loadPhoto(ImageView imageView) {
         AlertDialog.Builder imageDialog = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -157,6 +182,10 @@ public class ItemDetailFragment extends Fragment implements OnMapReadyCallback {
         imageDialog.show();
     }
 
+    /**
+     * Called when the MapView is finished.
+     * @param gMap
+     */
     @Override
     public void onMapReady(GoogleMap gMap) {
         mMap = gMap;

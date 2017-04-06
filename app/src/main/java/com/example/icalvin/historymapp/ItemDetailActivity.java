@@ -11,6 +11,10 @@ public class ItemDetailActivity extends AppCompatActivity {
 
     private String title;
 
+    /**
+     * Creates the View and setups it's contents.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +43,11 @@ public class ItemDetailActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Creates a Fragment where the information about the item is shown in.
+     * @param argument The whole item or it's position in FindingContent.ITEM_MAP.
+     * @param argumentType Indicates if it's the whole item or it's position.
+     */
     private void createFragment(String argument, String argumentType) {
         Bundle arguments = new Bundle();
         arguments.putString(argumentType, argument);
@@ -49,6 +58,11 @@ public class ItemDetailActivity extends AppCompatActivity {
                 .commit();
     }
 
+    /**
+     * Handles input in the menubar.
+     * @param item Item in the menubar that has been pressed.
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();

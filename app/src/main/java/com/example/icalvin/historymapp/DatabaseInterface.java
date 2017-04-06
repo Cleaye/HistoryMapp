@@ -12,6 +12,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,17 +28,25 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 public class DatabaseInterface {
-    private Context Context;
-    public Map<String, LatLng> mDataMap;
+    private Context context;
 
     public DatabaseInterface(Context context) {
-        Context = context;
-        mDataMap = new HashMap<>();
+        this.context = context;
     }
 
-    public Map<String, LatLng> getMData() throws ExecutionException, InterruptedException {
-        createMarkerURL(1, 100);
-        return mDataMap;
+    public Map<String, LatLng> getLocations() throws IOException {
+        String url = "http://rosegarden.eu/getLocation.php";
+        Document doc = null;
+
+        try {
+            doc = getDoc(url);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        Map<String, LatLng> map = locationsToList(doc);
+
+        return map;
     }
 
     public List<FindingContent.FindingItem> getFindingsFromPlace(String place, int start, int end, List<FindingContent.FindingItem> findings) throws ExecutionException, InterruptedException {
@@ -92,25 +101,6 @@ public class DatabaseInterface {
         return findings;
     }
 
-    private void createMarkerURL(int start, int end) throws ExecutionException, InterruptedException {
-        String url = "http://62.221.199.184:5842/action=get&command=search&query=and(not(isnull(Locatie));not(isnull(Image)))&range="+start+"-"+end+"&fields=Locatie";
-        Document doc = null;
-
-        try {
-            doc = getDoc(url);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-
-        locationsToList(doc);
-
-        NodeList countList = doc.getElementsByTagName("count");
-        int count = Integer.parseInt(countList.item(0).getFirstChild().getNodeValue());
-        if (count > end) {
-            createMarkerURL(start + 100, end + 100);
-        }
-    }
-
     private Document getDoc(String urlString) throws ExecutionException, InterruptedException, MalformedURLException, URISyntaxException {
         URL url = new URL(urlString);
         URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
@@ -121,7 +111,7 @@ public class DatabaseInterface {
     }
 
     private LatLng getCoordinatesFromPlaces(String place) {
-        Geocoder geocoder = new Geocoder(Context, Locale.US);
+        Geocoder geocoder = new Geocoder(context, Locale.US);
         List<Address> listOfAddress;
 
         try {
@@ -139,20 +129,42 @@ public class DatabaseInterface {
         return null;
     }
 
-    private void locationsToList(Document doc) {
-        NodeList locationNodes = doc.getElementsByTagName("Locatie");
+    private Map<String, LatLng> locationsToList(Document doc) {
+        Map<String, LatLng> map = new HashMap<>();
+        NodeList locationNodes = doc.getElementsByTagName("Location");
 
         for (int i = 0; i < locationNodes.getLength(); i++) {
-            Node location = locationNodes.item(i);
-            if (location.getNodeType() == Node.ELEMENT_NODE) {
-                String[] fullPlace = location.getFirstChild().getNodeValue().split("\\\\");
-                String place = fullPlace[fullPlace.length - 1] + ", " + fullPlace[fullPlace.length - 2];
-                if (!mDataMap.containsKey(place)) {
-                    LatLng coordinates = getCoordinatesFromPlaces(place);
-                    mDataMap.put(place, coordinates);
+            Node locations = locationNodes.item(i);
+            if (locations.getNodeType() == Node.ELEMENT_NODE) {
+                NodeList attributes = locations.getChildNodes();
+                String name = null;
+                LatLng coordinate = null;
+
+                for(int j = 0; j < attributes.getLength(); j++) {
+                    String attributeName = null;
+                    try {
+                        attributeName = attributes.item(j).getNodeName();
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (attributeName != null) {
+                        switch (attributeName) {
+                            case "place-name":
+                                name = attributes.item(j).getFirstChild().getNodeValue();
+                                break;
+                            case "latlong":
+                                String[] coordinateString = attributes.item(j).getFirstChild().getNodeValue().split(",");
+                                coordinate = new LatLng(Double.parseDouble(coordinateString[0]), Double.parseDouble(coordinateString[1]));
+                                break;
+                        }
+                    }
                 }
+
+                map.put(name, coordinate);
             }
         }
+
+        return map;
     }
 
     private List<FindingContent.FindingItem> findingsToList(Document doc) {
@@ -212,7 +224,7 @@ public class DatabaseInterface {
             }
             catch(Exception e) {
                 e.printStackTrace();
-                Toast.makeText(Context, "Database connection failed!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Connectie mislukt...", Toast.LENGTH_SHORT).show();
             }
 
             return doc;

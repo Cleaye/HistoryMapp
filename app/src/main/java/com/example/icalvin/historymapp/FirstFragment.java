@@ -25,19 +25,30 @@ public class FirstFragment extends Fragment implements IFragment{
     private ListView lvFindings;
     private List<FindingContent.FindingItem> findingsList;
     private FavouriteAdapter findingsAdapter;
-
     private FavouriteEditor favouriteEditor;
 
-    public FirstFragment() {
-        // Required empty public constructor
-    }
+    /**
+     * Required empty public constructor
+     */
+    public FirstFragment() {}
 
+    /**
+     * Called when the Fragment is being created.
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         favouriteEditor = new FavouriteEditor(getContext());
     }
 
+    /**
+     * Called when the View inside the Fragment is being created.
+     * @param inflater Used to set the view in a ViewGroup.
+     * @param container Contains the View that is wanted inside the Fragment.
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -59,10 +70,12 @@ public class FirstFragment extends Fragment implements IFragment{
 
         setLists();
 
-        // Inflate the layout for this fragment
         return inflatedView;
     }
 
+    /**
+     * Get the favourite list(s) and bind them to a ListView.
+     */
     private void setLists() {
         if (lvFindings != null) {
             findingsList = favouriteEditor.getFavourites("Findings");
@@ -75,7 +88,11 @@ public class FirstFragment extends Fragment implements IFragment{
         }
     }
 
-    //@Override
+    /**
+     * Updates the Fragment, so changes in the favourites will be shown.
+     * @return Returns if the Fragment is updated or not.
+     */
+    @Override
     public boolean update() {
         setLists();
         if (findingsAdapter != null)
@@ -89,6 +106,12 @@ public class FirstFragment extends Fragment implements IFragment{
         List data;
         private LayoutInflater inflater = null;
 
+        /**
+         * Constructor to make a new FavouriteAdapter.
+         * @param context Application context.
+         * @param resource Layout of a row in the ListView.
+         * @param objects List of objects that have to be shown in the ListView.
+         */
         public FavouriteAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List objects) {
             super(context, resource, objects);
             this.context = context;
@@ -96,31 +119,42 @@ public class FirstFragment extends Fragment implements IFragment{
             data = objects;
         }
 
+        /**
+         * Get the number of items inside the adapter.
+         * @return Returns the number of items inside the adapter.
+         */
         @Override
         public int getCount() {
             return data.size();
         }
 
+        /**
+         * Gets an item at certain position.
+         * @param position Position to get the item from.
+         * @return Returns an item at a certain position.
+         */
         @Override
         public Object getItem(int position) {
             return data.get(position);
         }
 
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
+        /**
+         * Gets the View of a row and prepares it's content.
+         * @param position Position in the adapter.
+         * @param convertView
+         * @param parent
+         * @return Returns the prepared View of a row.
+         */
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View vi = convertView;
-            if (vi == null)
-                vi = inflater.inflate(R.layout.item_list_content, null);
-            ImageView image = (ImageView) vi.findViewById(R.id.List_icon);
+            View view = convertView;
+            if (view == null)
+                view = inflater.inflate(R.layout.item_list_content, null);
+            ImageView image = (ImageView) view.findViewById(R.id.List_icon);
             ((FindingContent.FindingItem) data.get(position)).getImage(context, image);
-            TextView text = (TextView) vi.findViewById(R.id.id);
+            TextView text = (TextView) view.findViewById(R.id.id);
             text.setText(((FindingContent.FindingItem) data.get(position)).name);
-            return vi;
+            return view;
         }
     }
 }

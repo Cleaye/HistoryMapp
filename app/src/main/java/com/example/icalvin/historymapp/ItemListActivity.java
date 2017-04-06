@@ -24,6 +24,10 @@ public class ItemListActivity extends AppCompatActivity {
     private FindingContent findingContent;
     private String title;
 
+    /**
+     * Creates the View en setups the Toolbar.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         String viewType = getIntent().getStringExtra("Type");
@@ -72,10 +76,19 @@ public class ItemListActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Sets up a RecyclerView and fills it with data.
+     * @param recyclerView The RecyclerView to setup.
+     */
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(FindingContent.ITEMS));
     }
 
+    /**
+     * Handles input in the menubar.
+     * @param item Item in the menubar that has been pressed.
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -91,6 +104,10 @@ public class ItemListActivity extends AppCompatActivity {
 
         private final List<FindingContent.FindingItem> mValues;
 
+        /**
+         * Constructor to create a SimpleItemRecyclerViewAdapter
+         * @param items List of items to bind.
+         */
         public SimpleItemRecyclerViewAdapter(List<FindingContent.FindingItem> items) {
             mValues = items;
         }

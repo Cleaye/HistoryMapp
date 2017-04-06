@@ -52,22 +52,42 @@ public class ThirdFragment extends Fragment implements
     ImageButton fab;
     List<LatLng> markers = new ArrayList<LatLng>();
 
+    /**
+     * Constructor to create a new ThirdFragment
+     * @param c Application context.
+     */
     public ThirdFragment(Context c) {
         context = c;
     }
 
+    /**
+     * Creates a new DatabaseInterface.
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         dbInterface = new DatabaseInterface(context);
     }
 
+    /**
+     * Gets the View of this Fragment.
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return Returns the View of this Fragment.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.map_fragment, container, false);
         return mView;
     }
 
+    /**
+     * Fills in the View.
+     * @param view View to setup.
+     * @param savedInstanceState
+     */
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -90,6 +110,10 @@ public class ThirdFragment extends Fragment implements
 
     }
 
+    /**
+     * Called when GoogleMap is setup. Adds users position and markers to the map.
+     * @param gMap
+     */
     @Override
     public void onMapReady(GoogleMap gMap) {
         mGoogleMap = gMap;
@@ -117,6 +141,10 @@ public class ThirdFragment extends Fragment implements
                 .build();
     }
 
+    /**
+     * If connected request location of the user.
+     * @param bundle
+     */
     @Override
     public void onConnected(Bundle bundle) {
         if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -141,6 +169,10 @@ public class ThirdFragment extends Fragment implements
         Toast.makeText(context, "Verbinding mislukt...", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Called when users location changed. Zooms in on users location.
+     * @param location Location of the user.
+     */
     @Override
     public void onLocationChanged(Location location) {
         latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -151,10 +183,13 @@ public class ThirdFragment extends Fragment implements
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
+    /**
+     * Gets locations and creates markers to pin on the map.
+     * @param gMap GoogleMap to create to markers on.
+     */
     private void createMarkers(GoogleMap gMap) {
-        Map<String, LatLng> mData = null;
         try {
-            mData = dbInterface.getMData();
+            Map<String, LatLng> mData = dbInterface.getLocations();
             if (mData != null && !mData.isEmpty()) {
                 for (Map.Entry<String, LatLng> entry : mData.entrySet()) {
                     if(entry.getValue() != null) {
@@ -175,6 +210,11 @@ public class ThirdFragment extends Fragment implements
         }
     }
 
+    /**
+     * Called when clicked on a Marker.
+     * @param marker Marker that was clicked on.
+     * @return Returns true to continue this actions.
+     */
     @Override
     public boolean onMarkerClick(final Marker marker) {
         Intent intent = new Intent(context, ItemListActivity.class);
@@ -184,6 +224,12 @@ public class ThirdFragment extends Fragment implements
         return true;
     }
 
+    /**
+     * Zooms on all Markers, so all Markers fit in de view of the GoogleMap
+     * @param gMap GoogleMap to zoom on.
+     * @param markers Markers to fit inside the view.
+     * @param border Offset from edges of the GoogleMap in pixels.
+     */
     public void zoomOnMarkers(GoogleMap gMap, List<LatLng> markers, int border){
         if (!markers.isEmpty()) {
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -192,7 +238,7 @@ public class ThirdFragment extends Fragment implements
             }
             LatLngBounds bounds = builder.build();
 
-            int padding = border; // offset from edges of the map in pixels
+            int padding = border;
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 
             gMap.animateCamera(cu);
