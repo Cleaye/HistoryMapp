@@ -154,7 +154,7 @@ public class ItemDetailFragment extends Fragment implements OnMapReadyCallback, 
         View rootView = inflater.inflate(R.layout.item_detail, container, false);
 
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.item_detail_text)).setText(mItem.period +"\n\n"+ mItem.name);
+            ((TextView) rootView.findViewById(R.id.item_detail_text)).setText(mItem.period +"\n\n"+ mItem.name+"\n\nGevonden door: "+mItem.finder);
         }
 
         mMapView = (MapView) rootView.findViewById(R.id.map);

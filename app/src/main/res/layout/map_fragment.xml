@@ -9,12 +9,13 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="5dp"
-        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="15dp"
         android:clickable="true"
+        android:visibility="visible"
         app:fabSize="mini"
         app:srcCompat="@mipmap/ic_collapse"
         tools:fabSize="mini" />

@@ -7,16 +7,17 @@
         android:duration="1500"
         ></alpha>
     <set
-    android:startOffset="500">
-        <rotate
-            android:duration="2000"
-            android:fromDegrees="360"
-            android:toDegrees="0"
-            android:pivotX="50%"
-            android:pivotY="50%"
-            ></rotate>
+        >
+        <scale
+            android:fromXScale="0.0"
+            android:toXScale="0.8"
+            android:fromYScale="0.0"
+            android:toYScale="0.8"
+            android:pivotX="50%p"
+            android:pivotY="50%p"
+            android:duration="2500"/>
         <set
-            android:startOffset="1250">
+            android:startOffset="1750">
             <alpha
                 android:fromAlpha="1.0"
                 android:toAlpha="0.0"
