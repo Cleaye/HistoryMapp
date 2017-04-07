@@ -176,59 +176,13 @@ public class DatabaseInterface {
                             case "coordinate":
                                 coordinate = attributes.item(j).getFirstChild().getNodeValue();
                                 break;
-                            case "vinder":
+                            case "finder":
                                 finder = attributes.item(j).getFirstChild().getNodeValue();
                                 break;
                         }
                     }
                 }
                 findings.add(FindingContent.createFindingItem(id, name, description, period, imageURL, coordinate, finder));
-            }
-        }
-
-        return findings;
-    }
-
-    private List<FindingContent.FindingItem> findingsToList(Document doc) {
-        NodeList findingNodes = doc.getElementsByTagName("PZHoai");
-        List<FindingContent.FindingItem> findings = new ArrayList<>();
-
-        for (int i = 0; i < findingNodes.getLength(); i++) {
-            Node finding = findingNodes.item(i);
-            if (finding.getNodeType() == Node.ELEMENT_NODE) {
-                NodeList attributes = finding.getChildNodes();
-                String id = null;
-                String name = null;
-                String description = null ;
-                String period = null;
-                String imageURL = null;
-
-                for(int j = 0; j < attributes.getLength(); j++) {
-                    String attributeName = null;
-                    try {
-                        attributeName = attributes.item(j).getNodeName();
-                    } catch(Exception e) {
-                        e.printStackTrace();
-                    }
-                    if (attributeName != null) {
-                        switch (attributeName) {
-                            case "ID":
-                                id = attributes.item(j).getFirstChild().getNodeValue();
-                                break;
-                            case "Description":
-                                name = attributes.item(j).getFirstChild().getNodeValue();
-                                break;
-                            case "Periode":
-                                period = attributes.item(j).getFirstChild().getNodeValue();
-                                break;
-                            case "Image":
-                                imageURL = attributes.item(j).getFirstChild().getNodeValue();
-                                break;
-                        }
-                    }
-                }
-                //TODO: Add coordinates en finder
-                findings.add(FindingContent.createFindingItem(id, name, description, period, imageURL, null, null));
             }
         }
 
