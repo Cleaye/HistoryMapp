@@ -50,11 +50,13 @@ public class ItemListActivity extends AppCompatActivity {
                 if (ConnectionManager.hasNetworkConnection(getApplicationContext())) {
                     switch (viewType) {
                         case "Place":
-                            findingContent.getFindingsFromPlace(title.split(",")[0]);
+                            findingContent.getFindingsFromPlace(title);
                             break;
                         case "Period":
                             findingContent.getFindingsByPeriod(title);
                             break;
+                        case "Search":
+                            findingContent.getFindingsBySearch(title);
                     }
                 } else
                     Toast.makeText(getApplicationContext(), "Schakel een internetverbinding in", Toast.LENGTH_SHORT).show();

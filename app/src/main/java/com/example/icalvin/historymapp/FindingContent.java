@@ -34,10 +34,12 @@ public class FindingContent {
      * @param description Description of the item.
      * @param period Period in which the item belonged to.
      * @param imageURL Url to the image of the item.
+     * @param coordinate Where the item was found.
+     * @param finder Who found the item.
      * @return Returns a new FindingItem.
      */
-    public static FindingItem createFindingItem(String id, String name, String description, String period, String imageURL) {
-        return new FindingItem(id, name, description, period, imageURL);
+    public static FindingItem createFindingItem(String id, String name, String description, String period, String imageURL, String coordinate, String finder) {
+        return new FindingItem(id, name, description, period, imageURL, coordinate, finder);
     }
 
     /**
@@ -48,7 +50,7 @@ public class FindingContent {
      * @throws InterruptedException
      */
     public List<FindingItem> getFindingsFromPlace(String place) throws ExecutionException, InterruptedException {
-        ITEMS = dbInterface.getFindingsFromPlace(place, 1, 100, new ArrayList<FindingItem>());
+        ITEMS = dbInterface.getFindingsFromPlace(place);
         for(FindingItem item : ITEMS) {
             ITEM_MAP.put(item.id, item);
         }
@@ -63,7 +65,22 @@ public class FindingContent {
      * @throws InterruptedException
      */
     public List<FindingItem> getFindingsByPeriod(String period) throws ExecutionException, InterruptedException {
-        ITEMS = dbInterface.getFindingsByPeriod(period, 1, 100, new ArrayList<FindingItem>());
+        ITEMS = dbInterface.getFindingsByPeriod(period);
+        for(FindingItem item : ITEMS) {
+            ITEM_MAP.put(item.id, item);
+        }
+        return ITEMS;
+    }
+
+    /**
+     * Gives a list with FindingItems based on a search query.
+     * @param query Query given by user input.
+     * @return List with FindingItems.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    public List<FindingItem> getFindingsBySearch(String query) throws ExecutionException, InterruptedException {
+        ITEMS = dbInterface.getFindingsBySearch(query);
         for(FindingItem item : ITEMS) {
             ITEM_MAP.put(item.id, item);
         }
@@ -76,6 +93,8 @@ public class FindingContent {
         public String description;
         public String period;
         public String imageURL;
+        public String coordinate;
+        public String finder;
 
         /**
          * Constructor for a FindingItem.
@@ -84,13 +103,17 @@ public class FindingContent {
          * @param description Description of the item.
          * @param period Period in which the item belonged to.
          * @param imageURL Url to the image of the item.
+         * @param coordinate Coordinate of the item.
+         * @param finder Who found the object.
          */
-        public FindingItem(String id, String name, String description, String period, String imageURL) {
+        public FindingItem(String id, String name, String description, String period, String imageURL, String coordinate, String finder) {
             this.id = id;
             this.name = name;
             this.description = description;
             this.period = period;
             this.imageURL = imageURL;
+            this.coordinate = coordinate;
+            this.finder = finder;
         }
 
         /**

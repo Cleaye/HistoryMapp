@@ -1,6 +1,7 @@
 package com.example.icalvin.historymapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -13,11 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.like.LikeButton;
@@ -33,7 +37,7 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
  * in two-pane mode (on tablets) or a {@link ItemDetailActivity}
  * on handsets.
  */
-public class ItemDetailFragment extends Fragment implements OnMapReadyCallback {
+public class ItemDetailFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     public static final String ARG_ITEM_ID = "item_id";
     public static final String ARG_ITEM = "item";
@@ -193,12 +197,35 @@ public class ItemDetailFragment extends Fragment implements OnMapReadyCallback {
             return;
         }
 
-        gMap.setMyLocationEnabled(true);
+        if (mItem.coordinate != null && !mItem.coordinate.isEmpty())
+            createMarkers(mMap);
+    }
 
-        if (ConnectionManager.hasNetworkConnection(getContext())) {
-            // TODO: Create marker
-        }
-        else
-            Toast.makeText(getContext(), "Schakel een internetverbinding in", Toast.LENGTH_LONG).show();
+    /**
+     * Gets locations and creates markers to pin on the map.
+     * @param gMap GoogleMap to create to markers on.
+     */
+    private void createMarkers(GoogleMap gMap) {
+        String[] coordinatesString = mItem.coordinate.split(",");
+        LatLng coordinates = new LatLng(Double.parseDouble(coordinatesString[0]), Double.parseDouble(coordinatesString[1]));
+        gMap.addMarker(new MarkerOptions()
+                .position(coordinates));
+
+        gMap.setOnMarkerClickListener(this);
+        gMap.moveCamera( CameraUpdateFactory.newLatLngZoom(coordinates, 14.0f) );
+    }
+
+    /**
+     * Called when clicked on a Marker.
+     * @param marker Marker that was clicked on.
+     * @return Returns true to continue this actions.
+     */
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+        Intent intent = new Intent(getContext(), ItemListActivity.class);
+        intent.putExtra("Type", "Place");
+        intent.putExtra("Title", marker.getTitle());
+        startActivityForResult(intent, 1);
+        return true;
     }
 }

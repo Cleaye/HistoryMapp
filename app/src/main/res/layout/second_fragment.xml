@@ -52,7 +52,7 @@
                     android:background="@android:color/transparent"
                     android:onClick="onClickPaleolithicum"
                     android:scaleType="fitCenter"
-                    android:src="@mipmap/ic_vase"
+                    android:src="@mipmap/ic_spear"
                     android:text="Button" />
 
                 <TextView
@@ -77,7 +77,7 @@
                     android:background="@android:color/transparent"
                     android:onClick="onClickMesolithicum"
                     android:scaleType="fitCenter"
-                    android:src="@mipmap/ic_vase"
+                    android:src="@mipmap/ic_fish"
                     android:text="Button" />
 
                 <TextView
@@ -102,7 +102,7 @@
                     android:background="@android:color/transparent"
                     android:onClick="onClickNeolithicum"
                     android:scaleType="fitCenter"
-                    android:src="@mipmap/ic_vase"
+                    android:src="@mipmap/ic_stone"
                     android:text="Button" />
 
                 <TextView
@@ -162,7 +162,7 @@
                     android:elevation="0dp"
                     android:onClick="onClickIJzertijd"
                     android:scaleType="fitCenter"
-                    android:src="@mipmap/ic_vase"
+                    android:src="@mipmap/ic_axe"
                     android:text="Button" />
 
                 <TextView
@@ -254,7 +254,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="Middeleeuwen laat" />
+                    android:text="Middeleeuwen laat\n" />
             </LinearLayout>
 
             <LinearLayout
@@ -279,7 +279,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="Nieuwe tijd" />
+                    android:text="Nieuwe tijd\n" />
             </LinearLayout>
 
         </LinearLayout>

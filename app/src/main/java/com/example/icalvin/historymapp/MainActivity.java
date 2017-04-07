@@ -1,5 +1,6 @@
 package com.example.icalvin.historymapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -58,7 +59,10 @@ public class MainActivity extends AppCompatActivity  {
              */
             @Override
             public boolean onQueryTextSubmit(String query) {
-                //TODO: Search for objects in database
+                Intent intent = new Intent(getApplicationContext(), ItemListActivity.class);
+                intent.putExtra("Type", "Search");
+                intent.putExtra("Title", query);
+                startActivityForResult(intent, 1);
                 return false;
             }
 

@@ -1,8 +1,6 @@
 package com.example.icalvin.historymapp;
 
 import android.content.Context;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -20,7 +18,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -49,55 +46,47 @@ public class DatabaseInterface {
         return map;
     }
 
-    public List<FindingContent.FindingItem> getFindingsFromPlace(String place, int start, int end, List<FindingContent.FindingItem> findings) throws ExecutionException, InterruptedException {
-        String urlString = "http://62.221.199.184:5842/action=get&command=search&query=and(Vindplaats="+place+";not(isnull(Image)))&range="+start+"-"+end+"&fields=*";
+    public List<FindingContent.FindingItem> getFindingsFromPlace(String place) throws ExecutionException, InterruptedException {
+        List<FindingContent.FindingItem> findings = new ArrayList<>();
+        String urlString = "http://rosegarden.eu/specificLocation.php?location=" + place.trim();
         Document doc = null;
+
         try {
             doc = getDoc(urlString);
-            List<FindingContent.FindingItem> newFindings = findingsToList(doc);
-
-            if(newFindings.size() > 0) {
-                for (FindingContent.FindingItem item : newFindings) {
-                    findings.add(item);
-                }
-            }
+            findings = resultsToList(doc);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        if(doc != null) {
-            NodeList countList = doc.getElementsByTagName("count");
-            int count = Integer.parseInt(countList.item(0).getFirstChild().getNodeValue());
-            if (count > end) {
-                return getFindingsFromPlace(place, start + 100, end + 100, findings);
-            }
-        }
         return findings;
     }
 
-    public List<FindingContent.FindingItem> getFindingsByPeriod(String period, int start, int end, List<FindingContent.FindingItem> findings) throws ExecutionException, InterruptedException {
-        String urlString = "http://62.221.199.184:5842/action=get&command=search&query=and(Periode_sort="+period+";not(isnull(Image)))&range="+start+"-"+end+"&fields=*";
+    public List<FindingContent.FindingItem> getFindingsByPeriod(String period) throws ExecutionException, InterruptedException {
+        List<FindingContent.FindingItem> findings = new ArrayList<>();
+        String urlString = "http://rosegarden.eu/specificPeriod.php?period=" + period.trim();
         Document doc = null;
         try {
             doc = getDoc(urlString);
-            List<FindingContent.FindingItem> newFindings = findingsToList(doc);
-
-            if(newFindings.size() > 0) {
-                for (FindingContent.FindingItem item : newFindings) {
-                    findings.add(item);
-                }
-            }
+            findings = resultsToList(doc);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        if(doc != null) {
-            NodeList countList = doc.getElementsByTagName("count");
-            int count = Integer.parseInt(countList.item(0).getFirstChild().getNodeValue());
-            if (count > end) {
-                return getFindingsByPeriod(period, start + 100, end + 100, findings);
-            }
+        return findings;
+    }
+
+    public List<FindingContent.FindingItem> getFindingsBySearch(String query) {
+        List<FindingContent.FindingItem> findings = new ArrayList<>();
+        String urlString = "http://rosegarden.eu/specificObject.php?object=" + query.trim();
+        Document doc = null;
+
+        try {
+            doc = getDoc(urlString);
+            findings = resultsToList(doc);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         return findings;
     }
 
@@ -108,25 +97,6 @@ public class DatabaseInterface {
         Document doc = new RequestXMLTask().execute(url.toString()).get();
 
         return doc;
-    }
-
-    private LatLng getCoordinatesFromPlaces(String place) {
-        Geocoder geocoder = new Geocoder(context, Locale.US);
-        List<Address> listOfAddress;
-
-        try {
-            listOfAddress = geocoder.getFromLocationName(place, 1);
-            if(listOfAddress != null && !listOfAddress.isEmpty()){
-                Address address = listOfAddress.get(0);
-
-                double lat = address.getLatitude();
-                double lon = address.getLongitude();
-                return new LatLng(lat, lon);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private Map<String, LatLng> locationsToList(Document doc) {
@@ -159,12 +129,64 @@ public class DatabaseInterface {
                         }
                     }
                 }
-
                 map.put(name, coordinate);
             }
         }
 
         return map;
+    }
+
+    private List<FindingContent.FindingItem> resultsToList(Document doc) {
+        NodeList findingNodes = doc.getElementsByTagName("Object");
+        List<FindingContent.FindingItem> findings = new ArrayList<>();
+
+        for (int i = 0; i < findingNodes.getLength(); i++) {
+            Node finding = findingNodes.item(i);
+            if (finding.getNodeType() == Node.ELEMENT_NODE) {
+                NodeList attributes = finding.getChildNodes();
+                String id = null;
+                String name = null;
+                String description = null;
+                String period = null;
+                String imageURL = null;
+                String coordinate = null;
+                String finder = null;
+
+                for (int j = 0; j < attributes.getLength(); j++) {
+                    String attributeName = null;
+                    try {
+                        attributeName = attributes.item(j).getNodeName();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (attributeName != null && attributes.item(j).hasChildNodes()) {
+                        switch (attributeName) {
+                            case "id":
+                                id = attributes.item(j).getFirstChild().getNodeValue();
+                                break;
+                            case "description":
+                                name = attributes.item(j).getFirstChild().getNodeValue();
+                                break;
+                            case "period":
+                                period = attributes.item(j).getFirstChild().getNodeValue();
+                                break;
+                            case "image":
+                                imageURL = attributes.item(j).getFirstChild().getNodeValue();
+                                break;
+                            case "coordinate":
+                                coordinate = attributes.item(j).getFirstChild().getNodeValue();
+                                break;
+                            case "vinder":
+                                finder = attributes.item(j).getFirstChild().getNodeValue();
+                                break;
+                        }
+                    }
+                }
+                findings.add(FindingContent.createFindingItem(id, name, description, period, imageURL, coordinate, finder));
+            }
+        }
+
+        return findings;
     }
 
     private List<FindingContent.FindingItem> findingsToList(Document doc) {
@@ -205,8 +227,8 @@ public class DatabaseInterface {
                         }
                     }
                 }
-
-                findings.add(FindingContent.createFindingItem(id, name, description, period, imageURL));
+                //TODO: Add coordinates en finder
+                findings.add(FindingContent.createFindingItem(id, name, description, period, imageURL, null, null));
             }
         }
 
