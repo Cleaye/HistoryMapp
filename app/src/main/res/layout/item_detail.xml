@@ -27,6 +27,7 @@ tools:context="com.example.icalvin.historymapp.ItemDetailFragment">
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:layout_weight="1" />
+
     </LinearLayout>
 
 </FrameLayout>

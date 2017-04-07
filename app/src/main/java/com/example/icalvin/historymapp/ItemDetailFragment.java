@@ -2,10 +2,12 @@ package com.example.icalvin.historymapp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -136,6 +139,35 @@ public class ItemDetailFragment extends Fragment implements OnMapReadyCallback, 
                 public void unLiked(LikeButton likeButton) {
                     favouriteEditor.removeFromList("Findings", mItem);
                     MainActivity.updateFragment();
+                }
+            });
+
+            FloatingActionButton fab = (FloatingActionButton) activity.findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                /**
+                 * Start WhatsApp to share this item.
+                 * @param view
+                 */
+                @Override
+                public void onClick(View view) {
+                    PackageManager pm= getActivity().getPackageManager();
+                    try {
+
+                        Intent waIntent = new Intent(Intent.ACTION_SEND);
+                        waIntent.setType("text/plain");
+                        String text = "*HistoryMapp*\n" + mItem.name + "\n Gevonden bij " + mItem.coordinate;
+
+                        PackageInfo info = pm.getPackageInfo("com.whatsapp", PackageManager.GET_META_DATA);
+                        //Check if package exists or not. If not then code
+                        //in catch block will be called
+                        waIntent.setPackage("com.whatsapp");
+
+                        waIntent.putExtra(Intent.EXTRA_TEXT, text);
+                        startActivity(Intent.createChooser(waIntent, "Share with"));
+
+                    } catch (PackageManager.NameNotFoundException e) {
+                        Toast.makeText(getContext(), "WhatsApp niet geïnstalleerd", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
